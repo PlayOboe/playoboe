@@ -1,6 +1,6 @@
 # Play Oboe architecture
 
-Public coming-soon site for Play Oboe (`https://playoboe.net`).
+Public coming-soon site for Play Oboe (`https://www.playoboe.net`).
 English only. One route. Production is the Vercel Hobby project on team `Mcontrol`, deployed from the public GitHub repo `PlayOboe/playoboe`.
 
 ## Stack
@@ -18,7 +18,7 @@ English only. One route. Production is the Vercel Hobby project on team `Mcontro
 
 ## Hosting
 
-Production points `playoboe.net` at the Vercel Hobby project under the `Mcontrol` team. The GitHub repo must stay **public** or Hobby cannot deploy from the org.
+Production points `www.playoboe.net` at the Vercel Hobby project `playoboe` under the `Mcontrol` team. Apex redirects to www. The GitHub repo must stay **public** or Hobby cannot deploy from the org.
 
 ## Constraints
 

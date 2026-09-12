@@ -2,11 +2,11 @@
  * Production verification for playoboe.net
  * Run after deploy: node agent-workspace/verify-production.mjs
  */
-const BASE = process.argv[2] || "https://playoboe.net";
+const BASE = process.argv[2] || "https://www.playoboe.net";
 
 const routes = [
   { path: "/", expect: 200, contains: ["Play Oboe", "Coming soon", "Hear the reed", "/audio/oboe.mp3"] },
-  { path: "/sitemap.xml", expect: 200, contains: ["https://playoboe.net"] },
+  { path: "/sitemap.xml", expect: 200, contains: ["https://www.playoboe.net"] },
   { path: "/robots.txt", expect: 200, contains: ["Sitemap:"] },
   { path: "/images/scene.jpg", expect: 200 },
   { path: "/images/reed.png", expect: 200 },
@@ -46,7 +46,7 @@ async function checkSeoHome() {
   const hebrew = text.includes("האתר") || text.includes("בקרוב");
   const ok =
     res.status === 200 &&
-    (canonical === "https://playoboe.net/" || canonical === "https://playoboe.net") &&
+    (canonical === "https://www.playoboe.net/" || canonical === "https://www.playoboe.net") &&
     jsonld &&
     Boolean(og) &&
     !hebrew;
@@ -56,10 +56,19 @@ async function checkSeoHome() {
   );
 }
 
+async function checkApex() {
+  const res = await fetch("https://playoboe.net/", { redirect: "manual" });
+  const loc = res.headers.get("location") || "";
+  const ok = (res.status === 308 || res.status === 307) && loc.includes("www.playoboe.net");
+  if (!ok) failed += 1;
+  console.log(`${ok ? "PASS" : "FAIL"} ${res.status} apex redirect -> ${loc}`);
+}
+
 for (const route of routes) {
   await checkRoute(route);
 }
 await checkSeoHome();
+await checkApex();
 
 console.log(failed === 0 ? `\nALL CHECKS PASSED against ${BASE}` : `\n${failed} CHECK(S) FAILED against ${BASE}`);
 process.exit(failed === 0 ? 0 : 1);

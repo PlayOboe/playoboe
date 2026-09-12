@@ -1,7 +1,7 @@
 export const SITE = {
   name: "Play Oboe",
   legalName: "Play Oboe",
-  url: "https://playoboe.net",
+  url: "https://www.playoboe.net",
   locale: "en_US",
   tagline: "Coming soon",
   description:

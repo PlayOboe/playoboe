@@ -67,7 +67,7 @@ export default function HomePage() {
 
         <footer className="flex items-end justify-between gap-6 pt-8 font-sans text-[0.65rem] uppercase tracking-[0.24em] text-mist">
           <p>The house is being prepared</p>
-          <p>playoboe.net</p>
+          <p>www.playoboe.net</p>
         </footer>
       </div>
     </main>
