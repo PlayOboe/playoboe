@@ -65,7 +65,7 @@ export default function HomePage() {
           <ReedPlayer />
         </section>
 
-        <footer className="flex items-end justify-between gap-6 pt-8 font-sans text-[0.65rem] uppercase tracking-[0.24em] text-mist">
+        <footer className="flex flex-col gap-3 pt-8 font-sans text-[0.65rem] uppercase tracking-[0.24em] text-mist sm:flex-row sm:items-end sm:justify-between">
           <p>The house is being prepared</p>
           <p>www.playoboe.net</p>
         </footer>
