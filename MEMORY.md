@@ -5,4 +5,5 @@
 - Local preview: `npm run dev` → http://localhost:3020
 - Reed photograph was painted into the opera-house scene so the cane isolates cleanly against the cream bokeh. Source video audio is trimmed to 16.346s (last 2s removed).
 - Production verify: `node agent-workspace/verify-production.mjs`
-- First production ship rollback SHA: `1b04070`. Pre-deploy snapshot in `backups/pre-deploy.20260912-1825/`.
+- First production ship rollback SHA: `1b04070`. Latest production SHA: `038db0d`. Pre-deploy snapshot in `backups/pre-deploy.20260912-1825/`.
+- Apex DNS is split: some resolvers still return GoDaddy Website Builder IPs. `curl` to the Vercel A record 308s to www. Point the GoDaddy A record for `playoboe.net` at `216.198.79.1` only.
