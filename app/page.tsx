@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BrandLink } from "@/components/BrandLink";
 import { ContactForm } from "@/components/ContactForm";
 import { ReedPlayer } from "@/components/ReedPlayer";
 import {
@@ -25,9 +26,7 @@ export default function HomePage() {
           aria-label="Main"
           className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8"
         >
-          <p className="font-display text-sm uppercase tracking-[0.3em] text-brass">
-            Play Oboe
-          </p>
+          <BrandLink />
           <ul className="flex items-center gap-5 text-sm">
             <li className="hidden sm:block">
               <a href="#reeds" className="text-cream transition hover:text-mint">
