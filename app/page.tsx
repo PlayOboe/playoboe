@@ -87,9 +87,9 @@ export default function HomePage() {
               </h1>
               <div className="mt-6 h-px w-24 bg-copper/80" />
               <p className="mt-7 max-w-lg font-serif text-xl leading-8 text-cream/90 sm:text-2xl sm:leading-9">
-                Jeremy builds reeds by hand for players who need an instrument that
-                answers on the first breath. Every blank is tied, scraped and tested
-                before it leaves the bench.
+                Built by hand, with patience and love, for players who need an
+                instrument that answers on the first breath. Every blank is tied,
+                scraped and tested before it leaves the bench.
               </p>
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -137,9 +137,11 @@ export default function HomePage() {
                   Reeds
                 </h2>
                 <p className="mt-5 max-w-2xl font-serif text-lg leading-8 text-cream/85">
-                  Three scrapes, each finished to the player rather than to a
-                  catalogue. Tell Jeremy what you play and how you like a reed to push
-                  back, and he will build to that.
+                  The reed is where the oboe’s voice actually starts. Cane is a natural
+                  material — no two pieces share a density or a grain — and a scrape a
+                  few hundredths of a millimetre out is the difference between a reed
+                  that sings and one that will not speak at all. Learning to read a
+                  blank takes years at the bench.
                 </p>
               </div>
 
