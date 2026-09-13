@@ -5,12 +5,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: "#0b1220",
-        oxblood: "#5c101c",
-        gold: "#c4a35a",
-        ivory: "#f3ead6",
-        parchment: "#e8dcc3",
-        mist: "#cbbd9a",
+        forest: "#0c1f17",
+        pine: "#14312a",
+        moss: "#1d4435",
+        sage: "#27704f",
+        leaf: "#3c9670",
+        mint: "#7fc9a3",
+        copper: "#c4a35a",
+        brass: "#ddc48a",
+        cream: "#eef3ec",
+        muted: "#a9bdb2",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],

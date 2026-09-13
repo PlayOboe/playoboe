@@ -1,8 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
+import { AccessibilityBar } from "@/components/AccessibilityBar";
+import { CookieNotice } from "@/components/CookieNotice";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { SITE } from "@/lib/site";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { verificationMetadata } from "@/lib/seo";
+
+// Applied before first paint so a saved high-contrast or text-size choice never flashes.
+const EARLY_A11Y = `(()=>{try{var p=JSON.parse(localStorage.getItem("playoboe:a11y")||"{}");var r=document.documentElement;var s=[1,1.15,1.3,1.5,1.75][p.fontStep||0]||1;r.style.setProperty("--a11y-scale",String(s));if(p.contrast)r.setAttribute("data-a11y-contrast","high");if(p.readableFont)r.setAttribute("data-a11y-font","readable");if(p.underlineLinks)r.setAttribute("data-a11y-links","underline");if(p.wideSpacing)r.setAttribute("data-a11y-spacing","wide");if(p.reducedMotion)r.setAttribute("data-a11y-motion","reduced");}catch(e){}})();`;
 
 const display = Cinzel({
   subsets: ["latin"],
@@ -31,30 +37,13 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   applicationName: SITE.name,
-  authors: [{ name: SITE.name, url: SITE.url }],
-  creator: SITE.name,
+  authors: [{ name: SITE.founder, url: SITE.url }],
+  creator: SITE.founder,
   publisher: SITE.name,
-  keywords: ["oboe", "oboe reed", "opera", "classical music", "Play Oboe"],
-  robots: { index: true, follow: true },
-  openGraph: {
-    type: "website",
-    siteName: SITE.name,
-    locale: SITE.locale,
-    url: SITE.url,
-    title: `${SITE.name} | ${SITE.tagline}`,
-    description: SITE.description,
-    images: [{ url: "/images/og.jpg", width: 1200, height: 630, alt: `${SITE.name} | ${SITE.tagline}` }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE.name} | ${SITE.tagline}`,
-    description: SITE.description,
-    images: ["/images/og.jpg"],
-  },
-  icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-icon.png" }],
-  },
+  keywords: [...SITE.keywords],
+  category: "music",
+  referrer: "origin-when-cross-origin",
+  verification: verificationMetadata(),
 };
 
 export const viewport: Viewport = {
@@ -66,20 +55,20 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${serif.variable} ${sans.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: EARLY_A11Y }} />
+      </head>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([organizationJsonLd(), websiteJsonLd()]),
-          }}
-        />
         <a
           href="#content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ivory focus:px-3 focus:py-2 focus:text-navy"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] focus:rounded focus:bg-cream focus:px-4 focus:py-3 focus:font-semibold focus:text-forest"
         >
           Skip to content
         </a>
         {children}
+        <AccessibilityBar />
+        <ScrollToTop />
+        <CookieNotice />
       </body>
     </html>
   );

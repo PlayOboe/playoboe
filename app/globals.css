@@ -2,17 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --a11y-scale: 1;
+}
+
+html {
+  font-size: calc(100% * var(--a11y-scale));
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   min-height: 100%;
 }
 
 body {
-  background: #0b1220;
-  color: #f3ead6;
+  background: #0c1f17;
+  color: #eef3ec;
 }
 
 ::selection {
   background: #c4a35a;
-  color: #0b1220;
+  color: #0c1f17;
+}
+
+:focus-visible {
+  outline: 3px solid #ddc48a;
+  outline-offset: 3px;
+}
+
+/* ---------- Accessibility preferences (set by the toolbar on <html>) ---------- */
+
+html[data-a11y-links="underline"] a {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+html[data-a11y-font="readable"] body,
+html[data-a11y-font="readable"] button,
+html[data-a11y-font="readable"] input,
+html[data-a11y-font="readable"] textarea,
+html[data-a11y-font="readable"] select {
+  font-family: Verdana, "Segoe UI", Tahoma, sans-serif !important;
+  letter-spacing: normal !important;
+}
+
+html[data-a11y-spacing="wide"] p,
+html[data-a11y-spacing="wide"] li,
+html[data-a11y-spacing="wide"] label {
+  line-height: 2 !important;
+  letter-spacing: 0.06em !important;
+  word-spacing: 0.16em !important;
+}
+
+html[data-a11y-motion="reduced"] * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-a11y-contrast="high"] body {
+  background: #000000;
+  color: #ffffff;
+}
+
+html[data-a11y-contrast="high"] [data-surface] {
+  background: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html[data-a11y-contrast="high"] img:not([data-keep-image]),
+html[data-a11y-contrast="high"] [data-decorative] {
+  opacity: 0.25;
+}
+
+html[data-a11y-contrast="high"] h1,
+html[data-a11y-contrast="high"] h2,
+html[data-a11y-contrast="high"] h3,
+html[data-a11y-contrast="high"] p,
+html[data-a11y-contrast="high"] span,
+html[data-a11y-contrast="high"] li,
+html[data-a11y-contrast="high"] label,
+html[data-a11y-contrast="high"] a {
+  color: #ffffff !important;
+}
+
+html[data-a11y-contrast="high"] a,
+html[data-a11y-contrast="high"] button {
+  text-decoration: underline;
+}
+
+html[data-a11y-contrast="high"] button[data-primary],
+html[data-a11y-contrast="high"] input,
+html[data-a11y-contrast="high"] textarea {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
 }
