@@ -6,7 +6,7 @@ This repository is the Next.js site for Play Oboe — Jeremy's handmade oboe ree
 
 - See [agent-workspace/project-standards/architecture.md](agent-workspace/project-standards/architecture.md) for the canonical product and hosting notes.
 - See [MEMORY.md](MEMORY.md) for operational constraints, host and deployment notes, and production history.
-- The app is a Next.js App Router site with two routes and static assets in [public](public).
+- The app is a Next.js App Router site with three routes (`/`, `/studio`, and the `/admin` editor sign-in) and static assets in [public](public).
 - See [agent-workspace/project-standards/seo.md](agent-workspace/project-standards/seo.md) before any SEO, metadata or social-card change.
 
 ## Key files
@@ -15,7 +15,8 @@ This repository is the Next.js site for Play Oboe — Jeremy's handmade oboe ree
 - [app/studio/page.tsx](app/studio/page.tsx) and [public/studio/engine.js](public/studio/engine.js) — the browser instrument and its Web Audio engine.
 - [app/layout.tsx](app/layout.tsx) — global metadata, fonts, canonical URL, and SEO tags.
 - [components/ReedPlayer.tsx](components/ReedPlayer.tsx) — one-shot audio player behavior.
-- [lib/site.ts](lib/site.ts) — brand, copy, contact details and reed range. Single source of truth.
+- [lib/site.ts](lib/site.ts) — brand, contact details, and the default copy, reed range and prices. Single source of truth for defaults.
+- [lib/content-model.ts](lib/content-model.ts), [lib/content.ts](lib/content.ts), [lib/auth.ts](lib/auth.ts) and [components/PageEditor.tsx](components/PageEditor.tsx) — on-page editing of the home page's text. Once Jeremy has saved, the live copy is in the Blob store, not in the code.
 - [lib/seo.ts](lib/seo.ts) — shared metadata helpers.
 - [app/sitemap.ts](app/sitemap.ts) and [app/robots.ts](app/robots.ts) — sitemap and robots configuration.
 
@@ -32,7 +33,7 @@ This repository is the Next.js site for Play Oboe — Jeremy's handmade oboe ree
 ## Constraints
 
 - English only.
-- Two routes today: / and /studio. Do not add more without asking.
+- Three routes today: /, /studio and /admin. Do not add more without asking.
 - Deep forest green with copper accents. The opera-house styling has been replaced.
 - Do not add extra routes or major feature work without explicit approval.
 - Do not deploy to production or push code unless the user asks for it.

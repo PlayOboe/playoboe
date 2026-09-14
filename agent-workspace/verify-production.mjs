@@ -19,7 +19,7 @@ const routes = [
       "Hear the reed",
       "/audio/oboe.mp3",
       "Order form",
-      "Price on request",
+      "per reed",
     ],
   },
   {
@@ -28,8 +28,11 @@ const routes = [
     contains: ["OBOE TRANCE", "/studio/engine.js", "Accompany", "Back to Play Oboe"],
   },
   { path: "/studio/engine.js", expect: 200 },
+  { path: "/admin", expect: 200, contains: ["Edit the site", 'content="noindex'] },
+  // the editor's copy is never readable without signing in
+  { path: "/api/admin/content", expect: 401 },
   { path: "/sitemap.xml", expect: 200, contains: ["https://www.playoboe.net", "/studio"] },
-  { path: "/robots.txt", expect: 200, contains: ["Sitemap:", "Disallow: /api/"] },
+  { path: "/robots.txt", expect: 200, contains: ["Sitemap:", "Disallow: /api/", "Disallow: /admin"] },
   { path: "/manifest.webmanifest", expect: 200, contains: ["Play Oboe"] },
   { path: "/images/scene.jpg", expect: 200 },
   { path: "/images/reed.png", expect: 200 },

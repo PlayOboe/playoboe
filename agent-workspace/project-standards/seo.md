@@ -12,6 +12,12 @@ the meta tags, the JSON-LD and the social card all follow. Do not hard-code any 
 into a component: two copies will drift, and a description that disagrees with the
 page is worse than no description.
 
+The home page's visible text, reed range and prices are also editable from the page
+itself (see the on-page editing section of [architecture.md](architecture.md)). The
+JSON-LD reads that same saved copy, so an edited price or email is what gets marked
+up; `lib/site.ts` holds the defaults. The meta description and keywords are not
+editable from the page.
+
 ## Where each piece lives
 
 | Concern | File |
@@ -54,11 +60,10 @@ page is worse than no description.
 The home page emits `Organization`, `WebSite` and an `ItemList` of the reeds. The
 studio page emits a `BreadcrumbList`.
 
-The reeds are deliberately published **without** `offers`. A valid `Offer` requires a
-price, and there are no prices yet. Inventing one to win a rich result is the kind of
-thing that earns a manual structured-data penalty, so when real prices exist, add a
-proper `offers` object to each product in `reedsJsonLd()` in `lib/seo.ts` — do not
-fake it before then.
+Each reed carries one `Offer` at its per-reed price, built in `reedsJsonLd()` in
+`lib/seo.ts` from the page's current copy — the same values the cards show, so the
+markup and the page cannot disagree. The bundle price is deliberately left out: a
+search result should never advertise a price a single reed cannot be bought for.
 
 Likewise, do not add `AggregateRating`, `Review` or `FAQPage` markup until there is
 real content on the page to back it. Markup describing content a visitor cannot see is
@@ -111,7 +116,8 @@ behind it instead. Regenerate the set with
   markup for a feature that does not exist is invalid.
 - Do not set `robots: noindex` on the home page, even temporarily. Recovery is slow.
 - Do not add a second `<h1>` to a page.
-- Do not let `/api/` become crawlable. It is disallowed in `app/robots.ts`.
+- Do not let `/api/` or `/admin` become crawlable. Both are disallowed in `app/robots.ts`,
+  and `/admin` is also `noindex`.
 - Do not change the canonical host away from `https://www.playoboe.net` without also
   changing the DNS and the Vercel domain configuration. See
   [MEMORY.md](../../MEMORY.md) for the apex and DNS history.

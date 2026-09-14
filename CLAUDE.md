@@ -17,9 +17,11 @@ Before making a change, check:
 
 Follow these repo rules:
 
-- Do not broaden the scope beyond the existing two routes unless requested.
+- Do not broaden the scope beyond the existing routes (`/`, `/studio`, `/admin`) unless requested.
 - Respect the canonical URL and site metadata in [lib/site.ts](lib/site.ts). Do not
-  hard-code brand copy into components; it belongs in that file.
+  hard-code brand copy into components; it belongs in that file. Home-page text Jeremy
+  can edit goes through `lib/content-model.ts` and `<Editable>` — once he has saved,
+  the live copy is in the store and `lib/site.ts` only holds the defaults.
 - Keep the public-facing copy in English. The palette is deep forest green with copper
   accents — the earlier opera-house styling has been replaced.
 - Do not deploy or push to production without explicit approval.

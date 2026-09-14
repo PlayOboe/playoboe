@@ -13,17 +13,42 @@ Hobby project on team `Mcontrol`, deployed from the public GitHub repo
 
 ## Routes
 
-- `/` — one-page site: hero, reed range (no prices yet), workshop, order form.
+- `/` — one-page site: hero, reed range with prices, workshop, order form.
 - `/studio` — "Oboe Trance": a playable oboe synth over a generative trance backing,
   with a recorder and a looper.
+- `/admin` — sign-in for Jeremy to edit the home page's text in place. `noindex`,
+  disallowed in robots, not in the sitemap.
+
+## On-page editing
+
+Jeremy signs in at `/admin` and lands on `/` with every marked text editable in place;
+Save republishes the page within seconds. There is no separate CMS by design.
+
+- `lib/content-model.ts` — the editable copy's shape, its defaults (from `lib/site.ts`)
+  and validation. Adding an editable field means adding it here and wrapping it in
+  `<Editable path="...">` in `app/page.tsx`.
+- `lib/content.ts` — storage. Production: a private Vercel Blob store
+  (`BLOB_READ_WRITE_TOKEN`), with a dated copy of every save under `content/history/`.
+  Locally without a store: `.data/content.json`. On Vercel with no store, the defaults
+  render and saving returns 503.
+- `lib/auth.ts` — one editor; `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (scrypt) and
+  `SESSION_SECRET` in the environment only — the repo is public. Signed, HttpOnly
+  session cookie; writes also require a same-origin `Origin` header.
+- `app/api/admin/{login,logout,content}` — the endpoints. A save revalidates the
+  `site-content` cache tag and `/`, so the page stays static for visitors.
+- `components/PageEditor.tsx` — the in-page editor bar. It loads nothing for visitors;
+  it activates only when the `po_editor` hint cookie is present, and every read and
+  write is still checked against the session.
+- Once Jeremy has saved, the live copy lives in the store, not in the code. Changing
+  wording in `lib/site.ts` then only changes the defaults.
 
 ## Layers
 
-- `lib/site.ts` — brand, copy, contact details, reed range, verification tokens. The
+- `lib/site.ts` — brand, copy, contact details, reed range and prices, verification tokens. The
   single source of truth; the page, the metadata and the JSON-LD all read from it.
 - `lib/seo.ts` — metadata helpers and JSON-LD builders. See
   [seo.md](seo.md) before changing anything SEO-related.
-- `app/` — the two routes, API route, sitemap, robots, manifest, icons.
+- `app/` — the routes, API routes, sitemap, robots, manifest, icons.
 - `app/api/orders/route.ts` — order enquiries. Validates, then appends to a local
   `.orders/orders.jsonl`. **There is no email delivery yet**: on Vercel the filesystem
   is read-only, so in production a submission is validated and logged but not stored.

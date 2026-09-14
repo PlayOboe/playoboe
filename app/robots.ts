@@ -7,8 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // The order endpoint has nothing to index and should never appear in results.
-        disallow: ["/api/"],
+        // The API and the editor's sign-in page have nothing to index.
+        disallow: ["/api/", "/admin"],
       },
     ],
     sitemap: `${SITE.url}/sitemap.xml`,

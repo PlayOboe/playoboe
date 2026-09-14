@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { BrandLink } from "@/components/BrandLink";
 import { ContactForm } from "@/components/ContactForm";
+import { Editable } from "@/components/Editable";
+import { PageEditor } from "@/components/PageEditor";
 import { ReedPlayer } from "@/components/ReedPlayer";
+import { getContent } from "@/lib/content";
 import {
   jsonLdScript,
   organizationJsonLd,
@@ -9,7 +12,7 @@ import {
   reedsJsonLd,
   websiteJsonLd,
 } from "@/lib/seo";
-import { CONTACT, REEDS, SITE } from "@/lib/site";
+import { PRICING, SITE } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: `${SITE.name} | ${SITE.tagline}`,
@@ -17,10 +20,24 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
-export default function HomePage() {
+const price = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: PRICING.currency,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+// The symbol sits outside the editable number, so only digits are ever typed into a price.
+const currencySymbol = price.formatToParts(0).find((part) => part.type === "currency")?.value;
+
+export default async function HomePage() {
+  const content = await getContent();
+  const { hero, reeds, workshop, contact, footer } = content;
+
   return (
     <>
-      <script {...jsonLdScript([organizationJsonLd(), websiteJsonLd(), reedsJsonLd()])} />
+      <script
+        {...jsonLdScript([organizationJsonLd(content), websiteJsonLd(), reedsJsonLd(content)])}
+      />
       <header className="sticky top-0 z-40 border-b border-moss/70 bg-forest/90 backdrop-blur">
         <nav
           aria-label="Main"
@@ -75,22 +92,28 @@ export default function HomePage() {
 
           <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[1fr_minmax(0,24rem)] lg:py-28">
             <div>
-              <p className="font-sans text-xs uppercase tracking-[0.34em] text-copper">
-                Handmade in the workshop
-              </p>
-              <h1 className="mt-5 font-display text-5xl leading-[1.05] tracking-[0.02em] text-cream sm:text-6xl lg:text-7xl">
-                Oboe reeds,
-                <br />
-                scraped one
-                <br />
-                at a time.
-              </h1>
+              <Editable
+                as="p"
+                path="hero.eyebrow"
+                className="font-sans text-xs uppercase tracking-[0.34em] text-copper"
+              >
+                {hero.eyebrow}
+              </Editable>
+              <Editable
+                as="h1"
+                path="hero.title"
+                className="mt-5 whitespace-pre-line font-display text-5xl leading-[1.05] tracking-[0.02em] text-cream sm:text-6xl lg:text-7xl"
+              >
+                {hero.title}
+              </Editable>
               <div className="mt-6 h-px w-24 bg-copper/80" />
-              <p className="mt-7 max-w-lg font-serif text-xl leading-8 text-cream/90 sm:text-2xl sm:leading-9">
-                Built by hand, with patience and love, for players who need an
-                instrument that answers on the first breath. Every blank is tied,
-                scraped and tested before it leaves the bench.
-              </p>
+              <Editable
+                as="p"
+                path="hero.intro"
+                className="mt-7 max-w-lg whitespace-pre-line font-serif text-xl leading-8 text-cream/90 sm:text-2xl sm:leading-9"
+              >
+                {hero.intro}
+              </Editable>
 
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <a
@@ -130,54 +153,90 @@ export default function HomePage() {
           <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
             <div className="flex flex-col gap-10 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-sans text-xs uppercase tracking-[0.3em] text-copper">
-                  The bench
-                </p>
-                <h2 className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl">
-                  Reeds
-                </h2>
-                <p className="mt-5 max-w-2xl font-serif text-lg leading-8 text-cream/85">
-                  The reed is where the oboe’s voice actually starts. Cane is a natural
-                  material — no two pieces share a density or a grain — and a scrape a
-                  few hundredths of a millimetre out is the difference between a reed
-                  that sings and one that will not speak at all. Learning to read a
-                  blank takes years at the bench.
-                </p>
+                <Editable
+                  as="p"
+                  path="reeds.eyebrow"
+                  className="font-sans text-xs uppercase tracking-[0.3em] text-copper"
+                >
+                  {reeds.eyebrow}
+                </Editable>
+                <Editable
+                  as="h2"
+                  path="reeds.title"
+                  className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl"
+                >
+                  {reeds.title}
+                </Editable>
+                <Editable
+                  as="p"
+                  path="reeds.intro"
+                  className="mt-5 max-w-2xl whitespace-pre-line font-serif text-lg leading-8 text-cream/85"
+                >
+                  {reeds.intro}
+                </Editable>
               </div>
 
               <Image
                 src="/images/reed.png"
                 alt="A finished oboe reed, tied and scraped by hand"
-                width={437}
-                height={1052}
-                className="h-56 w-auto shrink-0 self-center drop-shadow-[0_14px_30px_rgba(0,0,0,0.45)] sm:h-64 lg:mr-44"
+                width={149}
+                height={1093}
+                className="h-56 w-auto shrink-0 self-center drop-shadow-[0_14px_30px_rgba(0,0,0,0.45)] sm:h-64 lg:mr-[212px]"
               />
             </div>
 
             <ul className="mt-12 grid gap-6 md:grid-cols-3">
-              {REEDS.map((reed) => (
+              {reeds.items.map((reed, i) => (
                 <li
-                  key={reed.name}
+                  key={i}
                   data-surface
                   className="flex flex-col rounded-lg border border-moss bg-pine p-7"
                 >
-                  <h3 className="font-display text-2xl text-cream">{reed.name}</h3>
-                  <p className="mt-2 text-xs uppercase tracking-[0.16em] text-mint">
+                  <Editable
+                    as="h3"
+                    path={`reeds.items.${i}.name`}
+                    className="font-display text-2xl text-cream"
+                  >
+                    {reed.name}
+                  </Editable>
+                  <Editable
+                    as="p"
+                    path={`reeds.items.${i}.detail`}
+                    className="mt-2 text-xs uppercase tracking-[0.16em] text-mint"
+                  >
                     {reed.detail}
-                  </p>
-                  <p className="mt-4 flex-1 font-serif text-lg leading-7 text-cream/85">
+                  </Editable>
+                  <Editable
+                    as="p"
+                    path={`reeds.items.${i}.blurb`}
+                    className="mt-4 flex-1 whitespace-pre-line font-serif text-lg leading-7 text-cream/85"
+                  >
                     {reed.blurb}
-                  </p>
-                  <p className="mt-6 border-t border-moss pt-4 text-sm text-muted">
-                    Price on request
-                  </p>
+                  </Editable>
+                  <div className="mt-6 border-t border-moss pt-4">
+                    <p className="flex items-baseline gap-2">
+                      <span className="font-display text-3xl text-cream">
+                        {currencySymbol}
+                        <Editable path={`reeds.items.${i}.price`}>{reed.price}</Editable>
+                      </span>
+                      <span className="text-sm text-muted">per reed</span>
+                    </p>
+                    <p className="mt-1 text-sm text-brass">
+                      <span data-bundle-price={i} data-currency-symbol={currencySymbol}>
+                        {price.format(reed.price - reeds.bundleDiscount)}
+                      </span>{" "}
+                      each in a bundle of <span data-bundle-size>{reeds.bundleSize}</span>
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>
 
             <p className="mt-8 text-sm text-muted">
-              Pricing is being finalised. For now, send an enquiry and Jeremy will
-              quote for your order.
+              Order a bundle of <Editable path="reeds.bundleSize">{reeds.bundleSize}</Editable>{" "}
+              and every reed in it is {currencySymbol}
+              <Editable path="reeds.bundleDiscount">{reeds.bundleDiscount}</Editable> less.{" "}
+              <Editable path="reeds.note">{reeds.note}</Editable>
             </p>
           </div>
         </section>
@@ -185,34 +244,50 @@ export default function HomePage() {
         <section id="workshop" className="border-b border-moss/60 bg-pine/40">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-2">
             <div>
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-copper">
-                Who makes them
-              </p>
-              <h2 className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl">
-                The workshop
-              </h2>
-              <p className="mt-6 font-serif text-lg leading-8 text-cream/85">
-                Jeremy has spent years at the gouging machine and the knife, learning
-                what a cane blank will and will not give. Reeds are made in small
-                batches, played in before they are sent, and any reed that does not
-                speak cleanly never makes it into the post.
-              </p>
-              <p className="mt-4 font-serif text-lg leading-8 text-cream/85">
-                If a reed arrives wrong for you, say so. Feedback goes straight back
-                into the next scrape.
-              </p>
+              <Editable
+                as="p"
+                path="workshop.eyebrow"
+                className="font-sans text-xs uppercase tracking-[0.3em] text-copper"
+              >
+                {workshop.eyebrow}
+              </Editable>
+              <Editable
+                as="h2"
+                path="workshop.title"
+                className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl"
+              >
+                {workshop.title}
+              </Editable>
+              <Editable
+                as="p"
+                path="workshop.story"
+                className="mt-6 whitespace-pre-line font-serif text-lg leading-8 text-cream/85"
+              >
+                {workshop.story}
+              </Editable>
+              <Editable
+                as="p"
+                path="workshop.feedback"
+                className="mt-4 whitespace-pre-line font-serif text-lg leading-8 text-cream/85"
+              >
+                {workshop.feedback}
+              </Editable>
             </div>
 
             <div
               data-surface
               className="flex flex-col justify-center rounded-lg border border-moss bg-pine p-8"
             >
-              <h3 className="font-display text-2xl text-cream">The Studio</h3>
-              <p className="mt-4 font-serif text-lg leading-7 text-cream/85">
-                A playable oboe built entirely in the browser, over a generative
-                trance backing that arranges itself as you play — with a recorder,
-                a looper and a live accompaniment that follows your line.
-              </p>
+              <Editable as="h3" path="workshop.studioTitle" className="font-display text-2xl text-cream">
+                {workshop.studioTitle}
+              </Editable>
+              <Editable
+                as="p"
+                path="workshop.studioText"
+                className="mt-4 whitespace-pre-line font-serif text-lg leading-7 text-cream/85"
+              >
+                {workshop.studioText}
+              </Editable>
               <a
                 href="/studio"
                 data-primary
@@ -220,10 +295,9 @@ export default function HomePage() {
               >
                 Open the Studio
               </a>
-              <p className="mt-3 text-sm text-muted">
-                Works best with headphones. Nothing is uploaded — it all runs on your
-                device.
-              </p>
+              <Editable as="p" path="workshop.studioNote" className="mt-3 text-sm text-muted">
+                {workshop.studioNote}
+              </Editable>
             </div>
           </div>
         </section>
@@ -231,29 +305,37 @@ export default function HomePage() {
         <section id="order" className="bg-forest">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-copper">
-                Orders and enquiries
-              </p>
-              <h2 className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl">
-                Get in touch
-              </h2>
+              <Editable
+                as="p"
+                path="contact.eyebrow"
+                className="font-sans text-xs uppercase tracking-[0.3em] text-copper"
+              >
+                {contact.eyebrow}
+              </Editable>
+              <Editable
+                as="h2"
+                path="contact.title"
+                className="mt-4 font-display text-4xl tracking-[0.02em] text-cream sm:text-5xl"
+              >
+                {contact.title}
+              </Editable>
 
               <dl className="mt-8 space-y-6">
                 <div>
                   <dt className="text-xs uppercase tracking-[0.16em] text-muted">
                     Email
                   </dt>
-                  <dd className="mt-1 font-serif text-xl text-cream">
-                    {CONTACT.email}
-                  </dd>
+                  <Editable as="dd" path="contact.email" className="mt-1 font-serif text-xl text-cream">
+                    {contact.email}
+                  </Editable>
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-[0.16em] text-muted">
                     Reply time
                   </dt>
-                  <dd className="mt-1 font-serif text-xl text-cream">
-                    {CONTACT.hours}
-                  </dd>
+                  <Editable as="dd" path="contact.hours" className="mt-1 font-serif text-xl text-cream">
+                    {contact.hours}
+                  </Editable>
                 </div>
               </dl>
             </div>
@@ -271,10 +353,14 @@ export default function HomePage() {
 
       <footer className="border-t border-moss/60 bg-forest">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p>Play Oboe — handmade oboe reeds</p>
+          <Editable as="p" path="footer.tagline">
+            {footer.tagline}
+          </Editable>
           <p>www.playoboe.net</p>
         </div>
       </footer>
+
+      <PageEditor />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { CONTACT, OG_IMAGE, REEDS, SITE } from "./site";
+import type { SiteContent } from "./content-model";
+import { CONTACT, OG_IMAGE, PRICING, SITE } from "./site";
 
 export function absoluteUrl(path = "/") {
   if (path.startsWith("http")) return path;
@@ -80,7 +81,8 @@ export function verificationMetadata(): Metadata["verification"] {
   return Object.keys(verification).length > 0 ? verification : undefined;
 }
 
-export function organizationJsonLd() {
+/** Takes the page's current copy, so an email changed from the page is the one published. */
+export function organizationJsonLd(content: SiteContent) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -96,7 +98,7 @@ export function organizationJsonLd() {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "sales",
-      email: CONTACT.email,
+      email: content.contact.email,
       areaServed: CONTACT.areaServed,
       availableLanguage: ["English"],
     },
@@ -117,17 +119,17 @@ export function websiteJsonLd() {
 }
 
 /**
- * The reed range. Modelled as an ItemList of Products with no Offer attached:
- * a price is required for a valid Offer, and publishing a fabricated one to win a
- * rich result is exactly the kind of thing that earns a structured-data penalty.
- * Add `offers` to each product here once real prices exist.
+ * The reed range, as an ItemList of Products. Each carries one Offer at the per-reed
+ * price shown on its card. The bundle price is deliberately left out of the markup, so
+ * a search result never advertises a price a single reed cannot be bought for. Reads
+ * the page's current copy, so prices changed from the page are the ones published.
  */
-export function reedsJsonLd() {
+export function reedsJsonLd(content: SiteContent) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `${SITE.name} reeds`,
-    itemListElement: REEDS.map((reed, i) => ({
+    itemListElement: content.reeds.items.map((reed, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
@@ -137,6 +139,13 @@ export function reedsJsonLd() {
         category: "Oboe reeds",
         brand: { "@id": `${SITE.url}/#organization` },
         image: absoluteUrl(OG_IMAGE.path),
+        offers: {
+          "@type": "Offer",
+          price: reed.price,
+          priceCurrency: PRICING.currency,
+          url: absoluteUrl("/"),
+          seller: { "@id": `${SITE.url}/#organization` },
+        },
       },
     })),
   };

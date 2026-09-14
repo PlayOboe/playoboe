@@ -31,6 +31,33 @@ body {
   outline-offset: 3px;
 }
 
+/* ---------- On-page editing (only while signed in; see components/PageEditor) ---------- */
+
+html[data-editing] [data-edit] {
+  outline: 1px dashed rgba(196, 163, 90, 0.6);
+  outline-offset: 4px;
+  border-radius: 2px;
+  cursor: text;
+}
+
+html[data-editing] [data-edit]:hover {
+  outline-color: #ddc48a;
+}
+
+html[data-editing] [data-edit]:focus {
+  outline: 2px solid #ddc48a;
+  background: rgba(221, 196, 138, 0.08);
+}
+
+html[data-editing] [data-edit][data-invalid] {
+  outline: 2px solid #f07b6b;
+}
+
+/* the editor bar takes the bottom of the screen; the cookie notice is for visitors */
+html[data-editor] [aria-label="Cookie notice"] {
+  display: none;
+}
+
 /* ---------- Accessibility preferences (set by the toolbar on <html>) ---------- */
 
 html[data-a11y-links="underline"] a {

@@ -62,26 +62,75 @@ export const CONTACT = {
   countryCode: "",
 } as const;
 
+// Reed prices are per reed. A bundle takes the same amount off every reed in it.
+// The cards, the note under them and the Product structured data all read from here.
+export const PRICING = {
+  currency: "USD",
+  bundleSize: 5,
+  bundleDiscount: 5,
+  note: "Prices are in US dollars. Shipping is not included.",
+} as const;
+
 export const REEDS = [
   {
     name: "Student",
     detail: "Medium-soft · quick response",
     blurb:
       "An easy-blowing reed with a forgiving crow. Built for players still finding a steady embouchure, and for long rehearsal days.",
+    price: 20,
   },
   {
     name: "Orchestral",
     detail: "Medium · balanced scrape",
     blurb:
       "The workhorse. Enough resistance to carry a hall, enough flexibility to shape a phrase down to nothing.",
+    price: 30,
   },
   {
     name: "Solo",
     detail: "Medium-hard · wide dynamic range",
     blurb:
       "Scraped for colour and projection, with a darker low register. Made one at a time for recital and concerto work.",
+    price: 40,
   },
 ] as const;
+
+// The words on the home page, section by section. These are the defaults: once Jeremy
+// saves an edit from the page itself, the saved copy is what renders — see
+// lib/content.ts. Line breaks in `hero.title` are kept.
+export const PAGE_COPY = {
+  hero: {
+    eyebrow: "Handmade in the workshop",
+    title: "Oboe reeds,\nscraped one\nat a time.",
+    intro:
+      "Built by hand, with patience and love, for players who need an instrument that answers on the first breath. Every blank is tied, scraped and tested before it leaves the bench.",
+  },
+  reeds: {
+    eyebrow: "The bench",
+    title: "Reeds",
+    intro:
+      "The reed is where the oboe’s voice actually starts. Cane is a natural material — no two pieces share a density or a grain — and a scrape a few hundredths of a millimetre out is the difference between a reed that sings and one that will not speak at all. Learning to read a blank takes years at the bench.",
+  },
+  workshop: {
+    eyebrow: "Who makes them",
+    title: "The workshop",
+    story:
+      "Jeremy has spent years at the gouging machine and the knife, learning what a cane blank will and will not give. Reeds are made in small batches, played in before they are sent, and any reed that does not speak cleanly never makes it into the post.",
+    feedback:
+      "If a reed arrives wrong for you, say so. Feedback goes straight back into the next scrape.",
+    studioTitle: "The Studio",
+    studioText:
+      "A playable oboe built entirely in the browser, over a generative trance backing that arranges itself as you play — with a recorder, a looper and a live accompaniment that follows your line.",
+    studioNote: "Works best with headphones. Nothing is uploaded — it all runs on your device.",
+  },
+  contact: {
+    eyebrow: "Orders and enquiries",
+    title: "Get in touch",
+  },
+  footer: {
+    tagline: "Play Oboe — handmade oboe reeds",
+  },
+} as const;
 
 export const OG_IMAGE = {
   path: "/images/og.jpg",
