@@ -13,9 +13,10 @@
 - First production ship rollback SHA: `1b04070`.
 - Coming-soon era final SHA: `038db0d`, then `400ad95`.
 - `6793d21` — the reed-workshop site in green. Roll back to `400ad95` to return to the opera-house coming-soon page. `d630b9f` and `ba5c0a4` were pushed after it and deployed automatically (production deployment `dpl_769yo98AghojRr17PbNa1LctrbaD`, 2026-09-14 02:56).
-- **Current production SHA: `e1e3447`** (2026-09-15 00:32, deployment `dpl_9fhgvJhxoH66mJsXQesBPM3rDivg`) — reed prices, Jeremy's reed photograph, and the on-page editor. **Rollback: `ba5c0a4`**; instantly with `vercel rollback https://playoboe-cksruasrq-mcontrol-bfc9693a.vercel.app`. Rolling back leaves the Blob store and the new environment variables in place; the old code simply ignores them.
+- `e1e3447` (2026-09-15 00:32, deployment `dpl_9fhgvJhxoH66mJsXQesBPM3rDivg`) — reed prices, Jeremy's reed photograph, and the on-page editor. Rollback from it: `ba5c0a4` (`vercel rollback https://playoboe-cksruasrq-mcontrol-bfc9693a.vercel.app`). Rolling back that far leaves the Blob store and the new environment variables in place; the old code simply ignores them. `c90e968` recorded it (deployment `dpl_G7HmKhuSanQS8zqSb36PnU3LCkfR`).
+- **Current production SHA: `2008b51`** (2026-09-15 01:44, deployment `dpl_89svp6JYSr6dPBUTd5vqjwZw5cFE`) — "per reed", the bundle prices, the bundle wording and the whole note under the cards became editable text. **Rollback: `c90e968`**; instantly with `vercel rollback https://playoboe-nekrzg0h6-mcontrol-bfc9693a.vercel.app`. Once Jeremy has saved in the new shape, the older code falls back to its defaults for the bundle fields — restore `content/site.json` from `backups/pre-deploy.20260915-0134/blob-store/` if rolling back.
 - Deploys happen by pushing `main`: the Vercel Git integration builds production within about a minute.
-- Pre-deploy snapshots in `backups/pre-deploy.20260912-1825/`, `backups/pre-deploy.20260914-0200/` and `backups/pre-deploy.20260915-0024/` (the last also holds a full `git bundle`, a zip of the production source, today's working-tree files and a copy of the live pages; local tag `pre-deploy-20260915-0024`).
+- Pre-deploy snapshots in `backups/pre-deploy.20260912-1825/`, `backups/pre-deploy.20260914-0200/` and `backups/pre-deploy.20260915-0024/` (a full `git bundle`, a zip of the production source, that day's working-tree files and a copy of the live pages; local tag `pre-deploy-20260915-0024`) and `backups/pre-deploy.20260915-0134/` (production source zip, live pages, and the Blob store's `content/site.json`; local tag `pre-deploy-20260915-0134`).
 
 ## Order form
 
@@ -31,6 +32,8 @@
 - Production env vars: `BLOB_READ_WRITE_TOKEN` (added by the store connection), `ADMIN_USERNAME`, and `ADMIN_PASSWORD_HASH` and `SESSION_SECRET` as sensitive secrets. Production's hash and secret were generated separately from the local ones. To change the password, replace `ADMIN_PASSWORD_HASH` (format from `hashPassword()` in `lib/auth.ts`) and redeploy; that also signs out every session.
 - `vercel blob create-store` rewrites `.env.local` (quoting values) and appends `.env*` to `.gitignore`, which would hide `.env.example`. Revert the `.gitignore` line if it happens again.
 - Local development saves to `.data/content.json` (gitignored). Delete that folder to go back to the defaults in `lib/site.ts`.
+- Every price text is independent: changing a reed's price does not change its bundle price or the note — Jeremy edits each. Copy saved before 2026-09-15 01:44 (one shared bundle size and discount) is converted when read, in `lib/content-model.ts`.
+- Production check of the price texts through a real browser: `_work/live-price-texts-check.mjs` (changes four texts for a few seconds, then restores the exact previous copy).
 - Once live, the page copy lives in the Blob store. A wording change made in `lib/site.ts` after Jeremy has saved will not show — edit it from the page instead.
 - Browser test of the whole flow: `_work/editor-test.mjs` (Chrome on `--remote-debugging-port=9223`, `PW` env var set to the password).
 
