@@ -11,6 +11,9 @@ export type ReedContent = {
   detail: string;
   blurb: string;
   price: number;
+  priceLabel: string;
+  bundlePrice: number;
+  bundleLabel: string;
 };
 
 export type SiteContent = {
@@ -20,8 +23,6 @@ export type SiteContent = {
     title: string;
     intro: string;
     items: ReedContent[];
-    bundleSize: number;
-    bundleDiscount: number;
     note: string;
   };
   workshop: {
@@ -42,8 +43,6 @@ export const DEFAULT_CONTENT: SiteContent = {
   reeds: {
     ...PAGE_COPY.reeds,
     items: REEDS.map((reed) => ({ ...reed })),
-    bundleSize: PRICING.bundleSize,
-    bundleDiscount: PRICING.bundleDiscount,
     note: PRICING.note,
   },
   workshop: { ...PAGE_COPY.workshop },
@@ -54,10 +53,10 @@ export const DEFAULT_CONTENT: SiteContent = {
 /** How a field is edited: one line, running text that may break lines, or a number. */
 export type FieldKind = "line" | "text" | "number";
 
-const NUMBER_FIELDS = [/^reeds\.items\.\d+\.price$/, /^reeds\.bundleSize$/, /^reeds\.bundleDiscount$/];
+const NUMBER_FIELDS = [/^reeds\.items\.\d+\.(price|bundlePrice)$/];
 const TEXT_FIELDS = [
   /^hero\.(title|intro)$/,
-  /^reeds\.intro$/,
+  /^reeds\.(intro|note)$/,
   /^reeds\.items\.\d+\.blurb$/,
   /^workshop\.(story|feedback|studioText)$/,
 ];
@@ -100,11 +99,10 @@ function checkString(input: unknown, fallback: string, path: string): Checked<st
 
 function checkNumber(input: unknown, fallback: number, path: string): Checked<number> {
   const value = typeof input === "string" && input.trim() !== "" ? Number(input) : input;
-  const min = path === "reeds.bundleSize" ? 2 : path === "reeds.bundleDiscount" ? 0 : 1;
-  if (typeof value !== "number" || !Number.isInteger(value) || value < min || value > 100000) {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > 100000) {
     return {
       value: fallback,
-      problem: { field: path, error: `This must be a whole number, ${min} or more.` },
+      problem: { field: path, error: "This must be a whole number, 1 or more." },
     };
   }
   return { value };
@@ -145,20 +143,39 @@ export function validateContent(
 ): { ok: true; content: SiteContent } | ({ ok: false } & Problem) {
   const problems: Problem[] = [];
   const content = walk(input, DEFAULT_CONTENT, "", problems) as SiteContent;
-  const cheapest = Math.min(...content.reeds.items.map((reed) => reed.price));
-  if (problems.length === 0 && content.reeds.bundleDiscount >= cheapest) {
-    problems.push({
-      field: "reeds.bundleDiscount",
-      error: "The bundle discount must be less than the price of the cheapest reed.",
-    });
-  }
   return problems.length ? { ok: false, ...problems[0] } : { ok: true, content };
+}
+
+/**
+ * Copy saved before 2026-09-15 held one bundle size and discount for all reeds, and
+ * the note held only the words after the bundle sentence. Rebuild the texts that
+ * replaced them, so whatever was saved then still shows.
+ */
+function fromSharedDiscount(input: unknown): unknown {
+  const source = input as { reeds?: Record<string, unknown> } | null;
+  const reeds = source?.reeds;
+  if (!reeds || typeof reeds.bundleSize !== "number" || typeof reeds.bundleDiscount !== "number") {
+    return input;
+  }
+  const { bundleSize, bundleDiscount, note, ...rest } = reeds;
+  const items = Array.isArray(reeds.items) ? reeds.items : [];
+  return {
+    ...source,
+    reeds: {
+      ...rest,
+      items: items.map((item: Record<string, unknown>) => ({
+        ...item,
+        bundlePrice: typeof item?.price === "number" ? item.price - bundleDiscount : undefined,
+        bundleLabel: `each in a bundle of ${bundleSize}`,
+      })),
+      note: `Order a bundle of ${bundleSize} and every reed in it is $${bundleDiscount} less. ${
+        typeof note === "string" ? note : ""
+      }`.trim(),
+    },
+  };
 }
 
 /** Lenient: for reading stored copy. Anything unusable falls back to the default. */
 export function withDefaults(input: unknown): SiteContent {
-  const content = walk(input, DEFAULT_CONTENT, "", []) as SiteContent;
-  const cheapest = Math.min(...content.reeds.items.map((reed) => reed.price));
-  if (content.reeds.bundleDiscount >= cheapest) content.reeds.bundleDiscount = 0;
-  return content;
+  return walk(fromSharedDiscount(input), DEFAULT_CONTENT, "", []) as SiteContent;
 }

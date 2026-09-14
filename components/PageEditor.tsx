@@ -49,28 +49,6 @@ function setPath(target: Content, path: string, value: unknown) {
   node[keys[keys.length - 1]] = value;
 }
 
-function numberAt(path: string) {
-  const el = document.querySelector<HTMLElement>(`[data-edit="${path}"]`);
-  return el ? Number(readValue(el)) : NaN;
-}
-
-/** Bundle prices are worked out from the price and discount, so follow them live. */
-function refreshBundlePrices() {
-  const discount = numberAt("reeds.bundleDiscount");
-  const size = numberAt("reeds.bundleSize");
-  document.querySelectorAll<HTMLElement>("[data-bundle-price]").forEach((el) => {
-    const price = numberAt(`reeds.items.${el.dataset.bundlePrice}.price`);
-    if (Number.isFinite(price) && Number.isFinite(discount)) {
-      el.textContent = `${el.dataset.currencySymbol ?? ""}${Math.max(0, price - discount)}`;
-    }
-  });
-  if (Number.isFinite(size)) {
-    document.querySelectorAll<HTMLElement>("[data-bundle-size]").forEach((el) => {
-      el.textContent = String(size);
-    });
-  }
-}
-
 function placeCaretAtEnd(el: HTMLElement) {
   const range = document.createRange();
   range.selectNodeContents(el);
@@ -138,7 +116,6 @@ export function PageEditor() {
           el.textContent = digits;
           placeCaretAtEnd(el);
         }
-        refreshBundlePrices();
       }
       markDirty();
       setStatus({ kind: "idle" });
@@ -222,7 +199,6 @@ export function PageEditor() {
       el.textContent = text;
       el.removeAttribute("data-invalid");
     }
-    refreshBundlePrices();
     setDirty(false);
     setStatus({ kind: "idle" });
   }

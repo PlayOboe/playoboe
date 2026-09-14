@@ -62,13 +62,12 @@ export const CONTACT = {
   countryCode: "",
 } as const;
 
-// Reed prices are per reed. A bundle takes the same amount off every reed in it.
-// The cards, the note under them and the Product structured data all read from here.
+// Every price and its wording is plain editable text on the page — nothing is worked out
+// from anything else, so a changed price does not change its bundle price. The Product
+// structured data uses the single-reed `price`.
 export const PRICING = {
   currency: "USD",
-  bundleSize: 5,
-  bundleDiscount: 5,
-  note: "Prices are in US dollars. Shipping is not included.",
+  note: "Order a bundle of 5 and every reed in it is $5 less. Prices are in US dollars. Shipping is not included.",
 } as const;
 
 export const REEDS = [
@@ -78,6 +77,9 @@ export const REEDS = [
     blurb:
       "An easy-blowing reed with a forgiving crow. Built for players still finding a steady embouchure, and for long rehearsal days.",
     price: 20,
+    priceLabel: "per reed",
+    bundlePrice: 15,
+    bundleLabel: "each in a bundle of 5",
   },
   {
     name: "Orchestral",
@@ -85,6 +87,9 @@ export const REEDS = [
     blurb:
       "The workhorse. Enough resistance to carry a hall, enough flexibility to shape a phrase down to nothing.",
     price: 30,
+    priceLabel: "per reed",
+    bundlePrice: 25,
+    bundleLabel: "each in a bundle of 5",
   },
   {
     name: "Solo",
@@ -92,6 +97,9 @@ export const REEDS = [
     blurb:
       "Scraped for colour and projection, with a darker low register. Made one at a time for recital and concerto work.",
     price: 40,
+    priceLabel: "per reed",
+    bundlePrice: 35,
+    bundleLabel: "each in a bundle of 5",
   },
 ] as const;
 

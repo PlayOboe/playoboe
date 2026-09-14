@@ -20,14 +20,10 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
-const price = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: PRICING.currency,
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 // The symbol sits outside the editable number, so only digits are ever typed into a price.
-const currencySymbol = price.formatToParts(0).find((part) => part.type === "currency")?.value;
+const currencySymbol = new Intl.NumberFormat("en-US", { style: "currency", currency: PRICING.currency })
+  .formatToParts(0)
+  .find((part) => part.type === "currency")?.value;
 
 export default async function HomePage() {
   const content = await getContent();
@@ -219,25 +215,23 @@ export default async function HomePage() {
                         {currencySymbol}
                         <Editable path={`reeds.items.${i}.price`}>{reed.price}</Editable>
                       </span>
-                      <span className="text-sm text-muted">per reed</span>
+                      <Editable path={`reeds.items.${i}.priceLabel`} className="text-sm text-muted">
+                        {reed.priceLabel}
+                      </Editable>
                     </p>
                     <p className="mt-1 text-sm text-brass">
-                      <span data-bundle-price={i} data-currency-symbol={currencySymbol}>
-                        {price.format(reed.price - reeds.bundleDiscount)}
-                      </span>{" "}
-                      each in a bundle of <span data-bundle-size>{reeds.bundleSize}</span>
+                      {currencySymbol}
+                      <Editable path={`reeds.items.${i}.bundlePrice`}>{reed.bundlePrice}</Editable>{" "}
+                      <Editable path={`reeds.items.${i}.bundleLabel`}>{reed.bundleLabel}</Editable>
                     </p>
                   </div>
                 </li>
               ))}
             </ul>
 
-            <p className="mt-8 text-sm text-muted">
-              Order a bundle of <Editable path="reeds.bundleSize">{reeds.bundleSize}</Editable>{" "}
-              and every reed in it is {currencySymbol}
-              <Editable path="reeds.bundleDiscount">{reeds.bundleDiscount}</Editable> less.{" "}
-              <Editable path="reeds.note">{reeds.note}</Editable>
-            </p>
+            <Editable as="p" path="reeds.note" className="mt-8 whitespace-pre-line text-sm text-muted">
+              {reeds.note}
+            </Editable>
           </div>
         </section>
 
