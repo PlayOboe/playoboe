@@ -12,8 +12,10 @@
 
 - First production ship rollback SHA: `1b04070`.
 - Coming-soon era final SHA: `038db0d`, then `400ad95`.
-- **Current production SHA: `6793d21`** — the reed-workshop site in green. Roll back to `400ad95` to return to the opera-house coming-soon page.
-- Pre-deploy snapshots in `backups/pre-deploy.20260912-1825/` and `backups/pre-deploy.20260914-0200/`.
+- `6793d21` — the reed-workshop site in green. Roll back to `400ad95` to return to the opera-house coming-soon page. `d630b9f` and `ba5c0a4` were pushed after it and deployed automatically (production deployment `dpl_769yo98AghojRr17PbNa1LctrbaD`, 2026-09-14 02:56).
+- **Current production SHA: `e1e3447`** (2026-09-15 00:32, deployment `dpl_9fhgvJhxoH66mJsXQesBPM3rDivg`) — reed prices, Jeremy's reed photograph, and the on-page editor. **Rollback: `ba5c0a4`**; instantly with `vercel rollback https://playoboe-cksruasrq-mcontrol-bfc9693a.vercel.app`. Rolling back leaves the Blob store and the new environment variables in place; the old code simply ignores them.
+- Deploys happen by pushing `main`: the Vercel Git integration builds production within about a minute.
+- Pre-deploy snapshots in `backups/pre-deploy.20260912-1825/`, `backups/pre-deploy.20260914-0200/` and `backups/pre-deploy.20260915-0024/` (the last also holds a full `git bundle`, a zip of the production source, today's working-tree files and a copy of the live pages; local tag `pre-deploy-20260915-0024`).
 
 ## Order form
 
@@ -24,14 +26,17 @@
 
 ## On-page editor
 
-- Jeremy edits the home page's text in place after signing in at `/admin` — a deliberate choice over a separate CMS. Username `randaj2016@gmail.com`. The password is stored only as a scrypt hash in `.env.local` and must go to Vercel the same way — never into the repo, which is public.
+- Jeremy edits the home page's text in place after signing in at `/admin` — a deliberate choice over a separate CMS. Username `randaj2016@gmail.com`. The password is stored only as a scrypt hash — never in the repo, which is public.
+- **Live since 2026-09-15.** Private Blob store `playoboe-content` (`store_AaaVImMwLQFiOQtl`, iad1), connected to Production only, so a preview deployment can never overwrite the live copy. The copy is `content/site.json`; every save adds a dated copy under `content/history/` — restore one by saving its content back.
+- Production env vars: `BLOB_READ_WRITE_TOKEN` (added by the store connection), `ADMIN_USERNAME`, and `ADMIN_PASSWORD_HASH` and `SESSION_SECRET` as sensitive secrets. Production's hash and secret were generated separately from the local ones. To change the password, replace `ADMIN_PASSWORD_HASH` (format from `hashPassword()` in `lib/auth.ts`) and redeploy; that also signs out every session.
+- `vercel blob create-store` rewrites `.env.local` (quoting values) and appends `.env*` to `.gitignore`, which would hide `.env.example`. Revert the `.gitignore` line if it happens again.
 - Local development saves to `.data/content.json` (gitignored). Delete that folder to go back to the defaults in `lib/site.ts`.
 - Once live, the page copy lives in the Blob store. A wording change made in `lib/site.ts` after Jeremy has saved will not show — edit it from the page instead.
 - Browser test of the whole flow: `_work/editor-test.mjs` (Chrome on `--remote-debugging-port=9223`, `PW` env var set to the password).
 
 ## Still open
 
-- **The editor is not live yet.** Production needs: a private Blob store connected to the Vercel project (`vercel blob create-store playoboe-content --access private --yes`, which adds `BLOB_READ_WRITE_TOKEN`), and `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET` added to the project's Production environment from `.env.local`. Then test save against the store before deploying. Without the store the site renders the defaults and Save returns 503.
-
+- The editor password was shared in plain text in a chat; change it once Jeremy is using the editor.
+- `npm audit` reports a high-severity PostCSS advisory inside Next's own bundled copy. It predates the editor, and the fix needs Next 16 (a breaking upgrade).
 - Google and Bing verification tokens are blank in `lib/site.ts`. Paste them there after opening Search Console; the process is written up in `agent-workspace/project-standards/seo.md`.
-- Reed prices were set by Jeremy on 2026-09-14: Student $20, Orchestral $30, Solo $40 per reed; a bundle of 5 takes $5 off every reed; shipping not included. The currency is assumed to be US dollars — confirm with Jeremy. Prices live in `REEDS` and `PRICING` in `lib/site.ts`.
+- Reed prices were set by Jeremy on 2026-09-14: Student $20, Orchestral $30, Solo $40 per reed; a bundle of 5 takes $5 off every reed; shipping not included. The currency is assumed to be US dollars — confirm with Jeremy. The defaults are in `REEDS` and `PRICING` in `lib/site.ts`; Jeremy can change the prices from the page.
